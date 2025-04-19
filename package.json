@@ -1,0 +1,28 @@
+{
+  "name": "performance",
+  "version": "1.0.0",
+  "description": "testing for js performance",
+  "license": "ISC",
+  "author": "Mohamed Elghandour",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start": "nodemon dist/index.js",
+    "compile": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/figlet": "^1.7.0",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1",
+    "cli-table3": "^0.6.5",
+    "figlet": "^1.8.1",
+    "gradient-string": "^3.0.0",
+    "string-width": "^7.2.0"
+  }
+}
