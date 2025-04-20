@@ -1,9 +1,7 @@
-// index.ts
-import chalk from 'chalk';
-import figlet from 'figlet';
-import Table from 'cli-table3';
-import { benchmark, BenchmarkResult } from '../utils/benchmark';
-import {printStyled} from "../utils/printStyled";
+import { benchmark } from '../utils/benchmark';
+import {BenchmarkResult, BenchmarkSummary, SourceCode} from "../types";
+import {extractFunctionCode} from "../utils/extractFunctionCode";
+import path from "path";
 
 // 🔁 Your version: array with includes & splice
 function longestSubstringArray(s: string): number {
@@ -52,22 +50,40 @@ function generateRandomStringData(count: number): string[] {
 }
 
 /** 🔍 Longest Substring Benchmark */
-export function substringBenchmark() {
+export function substringBenchmark(): BenchmarkSummary {
     const TEST_COUNT = 10000;
     const testData = generateRandomStringData(TEST_COUNT);
 
+    const fLabel = '📋 Array.includes+splice';
+    const lLabel = '🧩 Map sliding window';
+    const filename = path.basename(__filename);
+
     // run the raw benchmarks
     const results: BenchmarkResult[] = [
-        benchmark('🧩 Array.includes+splice', longestSubstringArray, testData),
-        benchmark('🧩 Map sliding window',   longestSubstringMap,   testData),
+        benchmark(fLabel, longestSubstringArray, testData),
+        benchmark(lLabel,   longestSubstringMap,   testData),
     ];
 
-    // pretty‑print them
-    printStyled(
-        'SUBSTRING',                        // ASCII banner text
-        'Longest Substring Benchmark',      // title
-        TEST_COUNT,                         // how many tests
-        'random strings (length 10–300)',   // description of data
-        results                             // the BenchmarkResult[] to render
-    );
+    // Read this file from disk and extract the two functions (with types!)
+    const sourceCode: SourceCode[] = [
+        {
+            label:fLabel,
+            code: extractFunctionCode(filename, 'longestSubstringArray')
+        },
+        {
+            label: lLabel,
+            code: extractFunctionCode(filename, 'longestSubstringMap')
+        },
+    ];
+
+
+
+    return {
+        bannerText: 'SUBSTRING',
+        title: 'Longest Substring Benchmark',
+        testCount: TEST_COUNT,
+        dataDescription: 'random strings (length 10–300)',
+        results,
+        sourceCode
+    };
 }

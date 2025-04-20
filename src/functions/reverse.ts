@@ -1,6 +1,7 @@
-// index.ts
-import { benchmark, BenchmarkResult } from '../utils/benchmark';
-import {printStyled} from "../utils/printStyled";
+import { benchmark } from '../utils/benchmark';
+import {BenchmarkResult, BenchmarkSummary, SourceCode} from "../types";
+import {extractFunctionCode} from "../utils/extractFunctionCode";
+import path from "path";
 
 function reverseString(x: number): number {
     const isNegative = x < 0;
@@ -38,22 +39,38 @@ function generateUniqueTestData(count: number): number[] {
     return Array.from(set);
 }
 
-export function reverseBenchmark() {
+export function reverseBenchmark(): BenchmarkSummary {
     const TEST_COUNT = 100000;
     const uniqueTestData = generateUniqueTestData(TEST_COUNT);
 
+    const fLabel = '🔡 String-based';
+    const lLabel = '🔢 Math-based';
+    const filename = path.basename(__filename);
+
     // run the raw benchmarks
     const results: BenchmarkResult[] = [
-        benchmark('🔡 String-based', reverseString, uniqueTestData),
-        benchmark('🔢 Math-based',   reverseMath,   uniqueTestData),
+        benchmark(fLabel, reverseString, uniqueTestData),
+        benchmark(lLabel,   reverseMath,   uniqueTestData),
     ];
 
-    // pretty‑print them
-    printStyled(
-        'REVERSE',                   // ASCII banner text
-        'Reverse Integer Benchmark', // title
-        TEST_COUNT,                  // how many tests
-        'unique integers',           // description of data
-        results                      // the BenchmarkResult[] to render
-    );
+    // Read this file from disk and extract the two functions (with types!)
+    const sourceCode: SourceCode[] = [
+        {
+            label: fLabel,
+            code: extractFunctionCode(filename, 'reverseString')
+        },
+        {
+            label: lLabel,
+            code: extractFunctionCode(filename, 'reverseMath')
+        },
+    ];
+
+    return {
+        bannerText:   'REVERSE',
+        title:    'Reverse Integer Benchmark',
+        testCount:   TEST_COUNT,
+        dataDescription:    'unique integers',
+        results,
+        sourceCode
+    };
 }

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Benchmark Suite</title>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col items-center p-6">
+<!-- Loader overlay -->
+<div
+        id="loading-overlay"
+        class="fixed inset-0 bg-white/75 flex items-center justify-center z-50 hidden"
+>
+    <svg
+            class="w-16 h-16 text-indigo-600 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+    >
+        <circle
+                class="opacity-25"
+                cx="12" cy="12" r="10"
+                stroke="currentColor"
+                stroke-width="4">
+        </circle>
+        <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z">
+        </path>
+    </svg>
+</div>
+<main class="w-full max-w-3xl">
+    <div class="w-full max-w-3xl">
+        <h1 class="text-5xl font-extrabold text-center mb-6 text-indigo-600">Benchmark Suite</h1>
+        <div class="mb-4">
+            <input type="text" id="search" placeholder="🔍 Search benchmarks…"
+                   class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+        </div>
+        <div id="function-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {{#functions}}
+                <a href="/benchmark/{{id}}" data-label="{{label}}"
+                   class="function-card block p-4 bg-white rounded-lg shadow hover:shadow-lg transition-transform transform hover:-translate-y-1">
+                    <div class="text-lg font-semibold text-gray-700 text-center">{{label}}</div>
+                </a>
+            {{/functions}}
+        </div>
+    </div>
+</main>
+{{> footer}}
+<script>
+    const searchInput = document.getElementById('search');
+    const functionList = document.getElementById('function-list');
+    searchInput.addEventListener('input', () => {
+        const filter = searchInput.value.toLowerCase();
+        Array.from(functionList.children).forEach(card => {
+            const label = card.getAttribute('data-label').toLowerCase();
+            card.style.display = label.includes(filter) ? 'block' : 'none';
+        });
+    });
+</script>
+<script>
+    // whenever any link to a benchmark is clicked, show the overlay
+    document.querySelectorAll('a[href^="/benchmark"]').forEach(el => {
+        el.addEventListener('click', () => {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+        });
+    });
+</script>
+</body>
+</html>
